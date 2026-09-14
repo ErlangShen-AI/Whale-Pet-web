@@ -1,0 +1,73 @@
+name: 同步安装包与发布日志
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync:
+    name: 同步安装包与发布日志
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_REPO: ErlangShen-AI/DeepSeek-Whale-Pet-Android
+      SOURCE_BRANCH: main
+    steps:
+      - name: 检出源码
+        uses: actions/checkout@v7
+
+      - name: 取回安装包与发布页正文
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p downloads
+          gh release download latest --repo "$SOURCE_REPO" --pattern '*.apk' --clobber --dir downloads
+          gh api "repos/$SOURCE_REPO/releases/tags/latest" --jq '.body' > downloads/release-notes.md
+
+      - name: 同步源仓库说明文件
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/README.md" -o downloads/upstream-readme.md
+          curl -fsSL "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/LICENSE" -o downloads/upstream-license.txt
+
+      - name: 写入安装包信息
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APK=downloads/DeepSeek-Whale-Pet.apk
+          SIZE=$(stat -c%s "$APK")
+          SHA=$(sha256sum "$APK" | cut -d ' ' -f 1)
+          UPDATED=$(gh api "repos/$SOURCE_REPO/releases/tags/latest" --jq '.assets[0].updated_at')
+          VERSION=$(curl -fsSL "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/app/build.gradle.kts" |
+            sed -n 's/.*versionName = "\(.*\)"/\1/p')
+          printf '{\n  "version": "%s", "size": %s, "sha256": "%s", "updatedAt": "%s"\n}\n' \
+            "$VERSION" "$SIZE" "$SHA" "$UPDATED" > downloads/latest.json
+          cat downloads/latest.json
+
+      - name: 提交更新
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads
+          if git diff --cached --quiet; then
+            printf '安装包没有变化\n'
+            exit 0
+          fi
+          git commit -m "同步安装包与发布日志"
+          git push
+
+      - name: 清理历史运行
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          for workflow in $(gh api "repos/$GITHUB_REPOSITORY/actions/workflows" --jq '.workflows[].id'); do
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=100" \
+              --jq '.workflow_runs[].id' | tail -n +6 | while read -r run; do
+                gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$run" > /dev/null || true
+              done
+          done
+          printf '每个工作流保留最近 5 次运行\n'

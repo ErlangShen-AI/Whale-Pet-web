@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>小鲸鱼桌宠 · Android</title>
+    <meta
+      name="description"
+      content="把界面右下角的那只小鲸鱼搬到 Android：拖动吸附、按压回弹，气泡里实时显示 DeepSeek 账户余额与今日用量。"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="assets/whale.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="nav" data-nav>
+      <div class="nav-inner">
+        <a class="nav-title" href="#top">
+          <img class="nav-logo" src="assets/deepseek-mark.svg" alt="" width="27" height="23" />
+          小鲸鱼桌宠
+        </a>
+        <nav class="nav-links" data-nav-links></nav>
+        <a class="nav-action" href="downloads/DeepSeek-Whale-Pet.apk" download>下载</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="page hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow">Android · 悬浮桌宠</p>
+            <h1>小鲸鱼<br /><span class="gradient">桌宠</span></h1>
+            <p class="lead" data-hero-lead>把界面右下角的那只小鲸鱼搬到 Android 桌面。</p>
+            <div class="cta">
+              <a class="button" href="downloads/DeepSeek-Whale-Pet.apk" download>
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3a1 1 0 0 1 1 1v9.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 1 1 1.4-1.4L11 13.6V4a1 1 0 0 1 1-1Z" />
+                  <path d="M4.5 19.5a1 1 0 0 1 1-1h13a1 1 0 1 1 0 2h-13a1 1 0 0 1-1-1Z" />
+                </svg>
+                <span>下载安装包</span>
+                <span class="button-meta" data-download-meta>最新版本</span>
+              </a>
+              <a class="button ghost" href="https://github.com/ErlangShen-AI/DeepSeek-Whale-Pet-Android">
+                <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.4-2.2-.2-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 5 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10 10 0 0 0 12 2Z"
+                  />
+                </svg>
+                <span>查看源码</span>
+              </a>
+            </div>
+            <dl class="facts" data-download-facts hidden>
+              <div>
+                <dt>版本</dt>
+                <dd data-fact="version">--</dd>
+              </div>
+              <div>
+                <dt>更新</dt>
+                <dd data-fact="updated">--</dd>
+              </div>
+            </dl>
+          </div>
+
+          <figure class="pet" aria-label="小鲸鱼与余额气泡">
+            <svg class="pet-art" viewBox="80 15 946 1011" role="img" aria-hidden="true">
+              <g class="pet-bubble">
+                <path
+                  d="M 827 248 A 373 232 0 1 0 81 246 A 373 232 0 0 0 301 465 A 57 32 10 0 0 413 484 A 373 232 0 0 0 827 248 Z"
+                  fill="#ffffff"
+                  stroke="#203170"
+                  stroke-width="18"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                />
+                <ellipse
+                  cx="352"
+                  cy="561"
+                  rx="37.5"
+                  ry="26"
+                  fill="#ffffff"
+                  stroke="#203170"
+                  stroke-width="18"
+                />
+                <ellipse
+                  cx="442"
+                  cy="646"
+                  rx="24.5"
+                  ry="18"
+                  fill="#ffffff"
+                  stroke="#203170"
+                  stroke-width="18"
+                />
+              </g>
+              <g class="pet-text" text-anchor="middle" dominant-baseline="central">
+                <text class="pet-label" x="454" y="162">DeepSeek 余额</text>
+                <text class="pet-amount" x="454" y="267">¥ 123.45</text>
+                <text class="pet-hint" x="454" y="371">今日已用 ¥ 6.78</text>
+              </g>
+              <image href="assets/whale.png" x="416" y="416" width="610" height="610" alt="" />
+            </svg>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="features" data-section-title="特性" data-nav-item="特性" data-reveal>
+        <div class="page">
+          <h2>特性</h2>
+          <ul class="cards" data-cards></ul>
+        </div>
+      </section>
+
+      <section class="section" id="interactions" data-section-title="交互" data-nav-item="交互" data-reveal>
+        <div class="page">
+          <h2>交互</h2>
+          <dl class="rows" data-rows></dl>
+          <p class="note" data-note="interactions"></p>
+        </div>
+      </section>
+
+      <section class="section" id="install" data-section-title="安装" data-nav-item="安装" data-reveal>
+        <div class="page">
+          <h2>安装</h2>
+          <ol class="steps" data-steps></ol>
+          <p class="note" data-note="install"></p>
+        </div>
+      </section>
+
+      <section class="section" id="permissions" data-section-title="权限" data-nav-item="权限" data-reveal>
+        <div class="page">
+          <h2>权限说明</h2>
+          <dl class="rows compact" data-rows-permissions></dl>
+          <p class="note" data-note="permissions"></p>
+        </div>
+      </section>
+
+      <section class="section" id="design" data-section-title="设计" data-nav-item="设计" data-reveal>
+        <div class="page">
+          <h2>设计说明</h2>
+          <ul class="points" data-points="design"></ul>
+          <p class="note" data-note="design"></p>
+        </div>
+      </section>
+
+      <section class="section" id="limits" data-section-title="限制" data-nav-item="限制" data-reveal>
+        <div class="page">
+          <h2>已知限制</h2>
+          <ul class="points" data-points="limits"></ul>
+        </div>
+      </section>
+
+      <section
+        class="section"
+        id="changelog"
+        data-section-title="更新日志"
+        data-nav-item="更新日志"
+        data-reveal
+      >
+        <div class="page">
+          <h2>更新日志</h2>
+          <div class="changelog" data-changelog>
+            <p class="note">正在读取发布页日志…</p>
+          </div>
+          <a
+            class="button ghost changelog-more"
+            href="https://github.com/ErlangShen-AI/DeepSeek-Whale-Pet-Android/releases"
+          >
+            <svg class="button-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M6 5h12a1 1 0 0 1 1 1v13.4a1 1 0 0 1-1.5.9L12 17.7l-5.5 2.6A1 1 0 0 1 5 19.4V6a1 1 0 0 1 1-1Z"
+              />
+            </svg>
+            <span>发布记录</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section" id="credits" data-section-title="致谢" data-nav-item="致谢" data-reveal>
+        <div class="page">
+          <h2>致谢与许可</h2>
+          <p class="lead narrow" data-credits-lead></p>
+          <div class="credits">
+            <a class="tile" href="https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget">
+              <h3>原项目</h3>
+              <p data-tile-origin>DeepSeek-Balance-Whale-Widget</p>
+            </a>
+            <a class="tile" href="https://github.com/ErlangShen-AI/DeepSeek-Whale-Pet-Android">
+              <h3>本仓库</h3>
+              <p data-tile-android>小鲸鱼桌宠 Android</p>
+            </a>
+          </div>
+          <p class="note" data-note="credits"></p>
+          <details class="license" data-license hidden>
+            <summary>许可证全文</summary>
+            <pre data-license-body></pre>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="page footer-inner">
+        <p>小鲸鱼桌宠 · 由 OpenMinis 编写，GitHub Actions 构建</p>
+        <p class="footer-links">
+          <a href="https://github.com/ErlangShen-AI/Whale-Pet-web">本页源码</a>
+          <a href="https://github.com/ErlangShen-AI/DeepSeek-Whale-Pet-Android/releases">发布记录</a>
+          <a href="https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget">原项目</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
