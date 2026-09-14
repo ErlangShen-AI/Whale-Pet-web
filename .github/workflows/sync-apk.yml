@@ -1,0 +1,52 @@
+name: 同步安装包
+
+on:
+  schedule:
+    - cron: '30 16 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: 同步安装包
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_REPO: ErlangShen-AI/DeepSeek-Whale-Pet-Android
+    steps:
+      - name: 检出源码
+        uses: actions/checkout@v7
+
+      - name: 取回安装包
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p downloads
+          gh release download latest --repo "$SOURCE_REPO" --pattern '*.apk' --clobber --dir downloads
+
+      - name: 写入安装包信息
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APK=downloads/DeepSeek-Whale-Pet.apk
+          SIZE=$(stat -c%s "$APK")
+          SHA=$(sha256sum "$APK" | cut -d ' ' -f 1)
+          UPDATED=$(gh api "repos/$SOURCE_REPO/releases/tags/latest" --jq '.assets[0].updated_at')
+          VERSION=$(curl -fsSL "https://raw.githubusercontent.com/$SOURCE_REPO/main/app/build.gradle.kts" |
+            sed -n 's/.*versionName = "\(.*\)"/\1/p')
+          printf '{\n  "version": "%s",\n  "size": %s,\n  "sha256": "%s",\n  "updatedAt": "%s"\n}\n' \
+            "$VERSION" "$SIZE" "$SHA" "$UPDATED" > downloads/latest.json
+          cat downloads/latest.json
+
+      - name: 提交更新
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads
+          if git diff --cached --quiet; then
+            printf '安装包没有变化\n'
+            exit 0
+          fi
+          git commit -m "同步安装包"
+          git push

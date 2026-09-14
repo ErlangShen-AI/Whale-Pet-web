@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>小鲸鱼桌宠 · Android</title>
+    <meta
+      name="description"
+      content="把界面右下角的那只小鲸鱼搬到 Android：拖动吸附、按压回弹，气泡里实时显示 DeepSeek 账户余额与今日用量。"
+    />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f2f7" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="assets/whale.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="nav-title" href="#top">小鲸鱼桌宠</a>
+        <nav class="nav-links">
+          <a href="#features">特性</a>
+          <a href="#interactions">交互</a>
+          <a href="#install">安装</a>
+          <a href="#design">设计</a>
+        </nav>
+        <a class="nav-action" href="downloads/DeepSeek-Whale-Pet.apk" download>下载</a>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="page hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow">Android · 悬浮桌宠</p>
+            <h1>小鲸鱼桌宠</h1>
+            <p class="lead">
+              把界面右下角的那只小鲸鱼搬到 Android 桌面。鲸鱼可以拖到屏幕任意位置、贴边吸附、按压回弹，
+              气泡里实时显示 DeepSeek 账户余额与今日用量。
+            </p>
+            <div class="cta">
+              <a class="button" href="downloads/DeepSeek-Whale-Pet.apk" download>
+                下载安装包
+                <span class="button-meta" data-download-meta>最新版本</span>
+              </a>
+              <a class="button ghost" href="https://github.com/ErlangShen-AI/DeepSeek-Whale-Pet-Android">
+                查看源码
+              </a>
+            </div>
+            <dl class="facts" data-download-facts hidden>
+              <div>
+                <dt>版本</dt>
+                <dd data-fact="version">--</dd>
+              </div>
+              <div>
+                <dt>大小</dt>
+                <dd data-fact="size">--</dd>
+              </div>
+              <div>
+                <dt>更新</dt>
+                <dd data-fact="updated">--</dd>
+              </div>
+            </dl>
+          </div>
+
+          <figure class="pet" aria-label="小鲸鱼与余额气泡">
+            <svg class="pet-art" viewBox="0 0 1026 1026" role="img" aria-hidden="true">
+              <g class="pet-bubble">
+                <path
+                  d="M 827 248 A 373 232 0 1 0 81 246 A 373 232 0 0 0 301 465 A 57 32 10 0 0 413 484 A 373 232 0 0 0 827 248 Z"
+                  fill="#ffffff"
+                  stroke="#203170"
+                  stroke-width="18"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                />
+                <ellipse
+                  cx="352"
+                  cy="561"
+                  rx="37.5"
+                  ry="26"
+                  fill="#ffffff"
+                  stroke="#203170"
+                  stroke-width="18"
+                />
+                <ellipse
+                  cx="442"
+                  cy="646"
+                  rx="24.5"
+                  ry="18"
+                  fill="#ffffff"
+                  stroke="#203170"
+                  stroke-width="18"
+                />
+              </g>
+              <g class="pet-text" text-anchor="middle" dominant-baseline="central">
+                <text class="pet-label" x="454" y="162">DeepSeek 余额</text>
+                <text class="pet-amount" x="454" y="267">¥ 123.45</text>
+                <text class="pet-hint" x="454" y="371">今日已用 ¥ 6.78</text>
+              </g>
+              <image
+                href="assets/whale.png"
+                x="416"
+                y="416"
+                width="610"
+                height="610"
+                alt=""
+              />
+            </svg>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <div class="page">
+          <h2>特性</h2>
+          <ul class="cards">
+            <li class="card">
+              <h3>悬浮桌宠</h3>
+              <p>拖动时与手指一比一跟随，坐标夹在系统栏以内的安全区，松手按落点吸附到最近的边。</p>
+            </li>
+            <li class="card">
+              <h3>贴边镜像</h3>
+              <p>左缘吸附整体水平镜像，气泡文字同步反向翻转后仍可读。</p>
+            </li>
+            <li class="card">
+              <h3>按压回弹</h3>
+              <p>按压 Q 弹玩偶效果，以鲸鱼底边中心为原点，按下时底部坐标不变。</p>
+            </li>
+            <li class="card">
+              <h3>代码绘制的气泡</h3>
+              <p>大椭圆、尾巴与两个小圆沿用原挂件几何，文字三行随气泡开合淡入。</p>
+            </li>
+            <li class="card">
+              <h3>余额</h3>
+              <p>每 60 秒自动刷新（可调 20 至 600 秒），点击鲸鱼立即刷新，余额变化时数字滚动。</p>
+            </li>
+            <li class="card">
+              <h3>上一轮对话消耗</h3>
+              <p>刷新时检测到余额下降即弹出消耗气泡，金额取绝对值并以红色显示。</p>
+            </li>
+            <li class="card">
+              <h3>今日已用</h3>
+              <p>小鲸鱼记账与实时令牌两种模式，令牌模式按峰谷定价换算。</p>
+            </li>
+            <li class="card">
+              <h3>自定义余额</h3>
+              <p>没有密钥时用任意文本替代余额与今日已用，也可以整体隐藏余额相关内容只留台词。</p>
+            </li>
+            <li class="card">
+              <h3>随机台词</h3>
+              <p>点击气泡切换台词，含时段提示、动态图与卖萌台词，按权重抽取。</p>
+            </li>
+            <li class="card">
+              <h3>音效</h3>
+              <p>小黄鸭与音效1两套按压音效，可关闭、可调音量、可试听。</p>
+            </li>
+            <li class="card">
+              <h3>自适应显示</h3>
+              <p>深浅色主题、系统字号缩放与旋转自适应。</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="interactions">
+        <div class="page">
+          <h2>交互</h2>
+          <dl class="rows">
+            <div class="row">
+              <dt>单击鲸鱼</dt>
+              <dd>刷新余额并弹出气泡，气泡已打开时只重新计时</dd>
+            </div>
+            <div class="row">
+              <dt>单击气泡</dt>
+              <dd>第一次切到随机台词，再点一次收起；消耗气泡点击直接收起</dd>
+            </div>
+            <div class="row">
+              <dt>拖动鲸鱼</dt>
+              <dd>移动桌宠，松手吸附到最近的边，贴左缘整体镜像</dd>
+            </div>
+            <div class="row">
+              <dt>通知栏条目</dt>
+              <dd>打开设置、立即刷新、收起桌宠</dd>
+            </div>
+            <div class="row">
+              <dt>应用图标</dt>
+              <dd>打开设置界面</dd>
+            </div>
+          </dl>
+          <p class="note">
+            桌宠本身不承载打开设置的手势，应用内的使用说明与此一致：没有双击与长按动作。
+            拖动越界即停在安全区边界，吸附按松手时的落点判定。气泡自动关闭时间可在设置中调整，设为 0 秒表示不自动收起。
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="install">
+        <div class="page">
+          <h2>安装</h2>
+          <ol class="steps">
+            <li>
+              <h3>下载安装包</h3>
+              <p>页面上的安装包每天由 GitHub Actions 自动构建并同步到这里。</p>
+            </li>
+            <li>
+              <h3>填写 API Key</h3>
+              <p>打开应用，在余额一栏填写「API Key」（<code>sk-</code> 开头）。</p>
+            </li>
+            <li>
+              <h3>授权悬浮窗</h3>
+              <p>点击「悬浮窗权限」按提示授权，鲸鱼需要绘制在其他应用上层。</p>
+            </li>
+            <li>
+              <h3>显示桌宠</h3>
+              <p>打开「显示桌宠」，鲸鱼会从屏幕边缘滑入。</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section" id="permissions">
+        <div class="page">
+          <h2>权限说明</h2>
+          <dl class="rows compact">
+            <div class="row">
+              <dt><code>SYSTEM_ALERT_WINDOW</code></dt>
+              <dd>在其他应用上层绘制桌宠</dd>
+            </div>
+            <div class="row">
+              <dt><code>FOREGROUND_SERVICE</code> / <code>FOREGROUND_SERVICE_SPECIAL_USE</code></dt>
+              <dd>保持桌宠常驻并显示状态通知</dd>
+            </div>
+            <div class="row">
+              <dt><code>POST_NOTIFICATIONS</code></dt>
+              <dd>展示余额状态通知</dd>
+            </div>
+            <div class="row">
+              <dt><code>INTERNET</code></dt>
+              <dd>请求余额与用量接口</dd>
+            </div>
+            <div class="row">
+              <dt><code>RECEIVE_BOOT_COMPLETED</code></dt>
+              <dd>开机后按设置恢复桌宠</dd>
+            </div>
+            <div class="row">
+              <dt><code>REQUEST_IGNORE_BATTERY_OPTIMIZATIONS</code></dt>
+              <dd>由用户决定是否加入电池优化白名单</dd>
+            </div>
+          </dl>
+          <p class="note">API Key 与平台令牌只保存在应用私有存储中，仅用于请求 DeepSeek 接口。</p>
+        </div>
+      </section>
+
+      <section class="section" id="design">
+        <div class="page">
+          <h2>设计说明</h2>
+          <ul class="points">
+            <li>反馈发生在按下瞬间：按压形变与按压音效同时开始，松手音效按按压样本的剩余时长排程。</li>
+            <li>按压形变用时 0.22 秒的 CSS <code>cubic-bezier(.34,1.56,.64,1)</code>，先过冲再回到原尺寸。</li>
+            <li>位置结算与尺寸变化走 0.16 秒与 0.28 秒的 CSS <code>ease</code> 补间；拖动期间坐标直接跟随手指。</li>
+            <li>拖动越界即停在安全区边界，不做阻尼；吸附目标取自松手时的落点。</li>
+            <li>动画由 Choreographer 推帧，只在有动画进行时请求下一帧。</li>
+            <li>气泡三个图形错峰弹出，文字延后 0.36 秒淡入，内容切换先淡出、替换、再淡入。</li>
+            <li>系统关闭动画后，位移与形变直接落位，气泡内容立即替换。</li>
+            <li>字号越大字距越紧、行高越紧，字重承担层级。</li>
+            <li>
+              气泡内容只由一处入口给出：隐藏余额、自定义余额、自定义今日已用、显示今日已用这些开关只改变取到的文本，
+              气泡、时段台词、设置页预览与通知栏消费同一份结果。
+            </li>
+          </ul>
+          <p class="note">
+            尺寸自适应只有两个来源：布局间距与圆角来自屏幕短边的比例并限定上下限，文字跟随系统字号，
+            桌宠的绘制全部以 1026x1026 的画布单位为基准按比例缩放，源码中不存在按屏幕写死的像素值。
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="limits">
+        <div class="page">
+          <h2>已知限制</h2>
+          <ul class="points">
+            <li>
+              鲸鱼与气泡各占一个矩形窗口，窗口分别收紧到各自实际绘制的像素外接框，窗口内没有绘制到的像素不会继续传给下层应用。
+            </li>
+            <li>气泡展开期间，气泡窗口与鲸鱼重叠的那一块无法抓取鲸鱼。</li>
+            <li>显示桌宠需要悬浮窗权限，未授权时打开开关会先跳转授权页。</li>
+            <li>
+              后台保活依赖前台服务与电池优化白名单，设置页提供两个跳转入口；
+              国产系统的自启动与后台限制还需在系统设置里单独放行。
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="credits">
+        <div class="page">
+          <h2>致谢与许可</h2>
+          <p class="lead narrow">
+            这个项目的形象与玩法全部来自原作，作者是
+            <a href="https://github.com/MeteorNOX">MeteorNOX</a>。鲸鱼形象与贴图、气泡几何与描边配色、
+            随机台词与权重、峰谷定价表与时段判定、记账规则都沿用自原项目；Android 端做的是把上面这些搬进悬浮窗，
+            重写窗口、触摸、绘制与刷新调度。
+          </p>
+          <div class="credits">
+            <a class="tile" href="https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget">
+              <h3>原项目</h3>
+              <p>DeepSeek-Balance-Whale-Widget，一只住在 DSH 界面右下角的小鲸鱼娘，盯着 DeepSeek 账户余额。</p>
+            </a>
+            <a class="tile" href="https://github.com/ErlangShen-AI/DeepSeek-Whale-Pet-Android">
+              <h3>本仓库</h3>
+              <p>小鲸鱼桌宠 Android，源码、构建产物与发布页都在这里。</p>
+            </a>
+          </div>
+          <p class="note">
+            本项目与原项目同为 MIT 协议，两条版权声明并列保留在源码仓库的 LICENSE 中：
+            Copyright (c) 2026 MeteorNOX（原作）、Copyright (c) 2026 ErlangShen（Android 移植与移植部分的改动）。
+            再分发、修改或用于商业用途时，请保留这两条版权声明与 MIT 许可全文。
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="page footer-inner">
+        <p>小鲸鱼桌宠 · 由 OpenMinis 编写，GitHub Actions 构建</p>
+        <p class="footer-links">
+          <a href="https://github.com/ErlangShen-AI/Whale-Pet-web">本页源码</a>
+          <a href="https://github.com/ErlangShen-AI/DeepSeek-Whale-Pet-Android/releases">发布记录</a>
+          <a href="https://github.com/MeteorNOX/DeepSeek-Balance-Whale-Widget">原项目</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
