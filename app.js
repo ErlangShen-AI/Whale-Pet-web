@@ -345,6 +345,17 @@ const fillChangelog = async () => {
   if (html.trim()) host.innerHTML = html
 }
 
+/** 许可证全文来自上游仓库的 LICENSE，同步到 downloads/upstream-license.txt。 */
+const fillLicense = async () => {
+  const details = document.querySelector('[data-license]')
+  const body = document.querySelector('[data-license-body]')
+  if (!details || !body) return
+  const text = await readText('downloads/upstream-license.txt')
+  if (!text) return
+  body.textContent = text.trim()
+  details.hidden = false
+}
+
 /** 导航条目由页面里登记的小节生成，不在脚本里维护列表。 */
 const buildNav = () => {
   const host = document.querySelector('[data-nav-links]')
@@ -417,6 +428,7 @@ const main = async () => {
 
   fillDownloadFacts()
   fillChangelog()
+  fillLicense()
 
   const readme = await readText('downloads/upstream-readme.md')
   if (!readme) return

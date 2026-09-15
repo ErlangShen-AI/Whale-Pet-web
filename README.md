@@ -8,7 +8,7 @@
 ```text
 ├── index.html                 页面结构
 ├── style.css                  样式与自适应令牌
-├── app.js                     导航材质状态与安装包信息
+├── app.js                     页面填充与安装包信息
 ├── assets/                    鲸鱼贴图与动图
 ├── downloads/                 同步到这里的安装包与信息文件
 └── .github/workflows/
@@ -17,8 +17,10 @@
 
 ## 安装包同步
 
-`sync-apk.yml` 每天定时执行：从软件仓库的 `latest` 发布取回 APK，写入 `downloads/latest.json`
-（版本号、字节数、校验值、更新时间），有变化时提交一次。也可以在 Actions 页面手动触发。
+`sync-apk.yml` 每天北京时间 0 点执行：从软件仓库的 `latest` 发布取回 APK，同步说明文件与发布日志，
+写入 `downloads/latest.json`（版本号、字节数、校验值、更新时间），有变化时提交一次。
+每次运行结束后清理本仓库工作流的历史运行记录，仅保留最近 5 次。
+也可以在 Actions 页面手动触发。
 
 ## 本地预览
 

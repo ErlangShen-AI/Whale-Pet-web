@@ -931,6 +931,31 @@ code {
   border-block-start: var(--hairline) solid var(--separator);
 }
 
+/* 许可证折叠块：正文是上游 LICENSE 的原文，原样展示 */
+.license {
+  margin-block-start: var(--gap);
+}
+
+.license summary {
+  cursor: pointer;
+  font-size: var(--text-meta);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.license pre {
+  margin: var(--gap-sm) 0 0;
+  padding: calc(var(--unit) * 1.6) calc(var(--unit) * 2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: var(--hairline) solid var(--card-border);
+  font-size: calc(var(--text-meta) * 0.92);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: var(--text-secondary);
+}
+
 .footer-inner {
   display: flex;
   flex-wrap: wrap;
