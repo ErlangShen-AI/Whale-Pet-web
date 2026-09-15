@@ -104,18 +104,6 @@ const readText = async (path) => {
   }
 }
 
-const formatSize = (bytes) => {
-  if (!Number.isFinite(bytes) || bytes <= 0) return null
-  const units = ['B', 'KB', 'MB', 'GB']
-  let value = bytes
-  let index = 0
-  while (value >= 1024 && index < units.length - 1) {
-    value /= 1024
-    index += 1
-  }
-  return `${value >= 100 ? Math.round(value) : value.toFixed(1)} ${units[index]}`
-}
-
 const formatDate = (iso) => {
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return null
@@ -137,9 +125,7 @@ const fillDownloadFacts = async () => {
   if (!facts) return
   const values = {
     version: data.version ? `v${data.version}` : null,
-    size: formatSize(data.size),
-    updated: formatDate(data.updatedAt),
-    sha256: data.sha256 ? String(data.sha256).slice(0, 12) + '…' : null
+    updated: formatDate(data.updatedAt)
   }
   let filled = false
   for (const key of Object.keys(values)) {
@@ -421,6 +407,8 @@ const observeReveals = () => {
 }
 
 const main = async () => {
+  // 加 js 类后揭示位移才生效，脚本不可用时内容保持原位完整可见
+  document.documentElement.classList.add('js')
   buildNav()
   observeSections()
   observeReveals()

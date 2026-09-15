@@ -1,7 +1,8 @@
 /* 布局单位取屏幕短边的比例并限定上下限，所有间距、圆角与字号都由它派生 */
 :root {
-  color-scheme: light dark;
-  --unit: clamp(0.375rem, 2.1vmin, 0.8125rem);
+  color-scheme: dark;
+  /* 下限 7.2px：窄屏上单位保持可用的触摸尺寸，上限 13px：宽屏上间距不失控 */
+  --unit: clamp(0.45rem, 2.1vmin, 0.8125rem);
   --hairline: max(1px, calc(var(--unit) * 0.14));
   --radius-xl: calc(var(--unit) * 4.2);
   --radius-lg: calc(var(--unit) * 3);
@@ -14,48 +15,28 @@
   --gap: calc(var(--unit) * 2.5);
   --gap-lg: calc(var(--unit) * 4.5);
   --section-gap: calc(var(--unit) * 8);
-  --text-hero: clamp(2.4rem, 1.2rem + 4.6vmin, 5rem);
+  --text-hero: clamp(1.9rem, 0.9rem + 5vmin, 5rem);
   --text-title: clamp(1.5rem, 1.2rem + 1.2vmin, 2.3rem);
   --text-lead: clamp(1.02rem, 0.94rem + 0.44vmin, 1.34rem);
   --text-body: clamp(0.95rem, 0.92rem + 0.22vmin, 1.1rem);
   --text-meta: clamp(0.78rem, 0.76rem + 0.14vmin, 0.92rem);
-  --background: #f4f5fb;
-  --surface: rgba(255, 255, 255, 0.72);
-  --surface-solid: #ffffff;
-  --text-primary: #14151c;
-  --text-secondary: #56586a;
-  --text-tertiary: #9698ac;
-  --separator: rgba(30, 32, 52, 0.12);
-  --accent: #4d6bfe;
-  --accent-2: #8b5cff;
-  --accent-soft: rgba(77, 107, 254, 0.1);
-  --nav-material: rgba(244, 245, 251, 0.66);
-  --shadow: 0 calc(var(--unit) * 0.6) calc(var(--unit) * 2.2) rgba(24, 26, 48, 0.06);
-  --shadow-lg: 0 calc(var(--unit) * 1.6) calc(var(--unit) * 4.6) rgba(24, 26, 48, 0.12);
-  --shadow-glow: 0 calc(var(--unit) * 1.2) calc(var(--unit) * 4) rgba(77, 107, 254, 0.24);
-  --card-border: rgba(255, 255, 255, 0.9);
+  --background: #07070c;
+  --surface: rgba(28, 28, 36, 0.66);
+  --surface-solid: #1c1c24;
+  --text-primary: #f3f3f9;
+  --text-secondary: #a2a4b8;
+  --text-tertiary: #62647a;
+  --separator: rgba(120, 124, 150, 0.22);
+  --accent: #8f9bff;
+  --accent-2: #b08cff;
+  --accent-soft: rgba(143, 155, 255, 0.14);
+  --nav-material: rgba(7, 7, 12, 0.62);
+  --shadow: none;
+  --shadow-lg: 0 calc(var(--unit) * 1.6) calc(var(--unit) * 4.6) rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 calc(var(--unit) * 1.2) calc(var(--unit) * 4) rgba(143, 155, 255, 0.28);
+  --card-border: rgba(255, 255, 255, 0.07);
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC",
     "HarmonyOS Sans SC", "MiSans", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #07070c;
-    --surface: rgba(28, 28, 36, 0.66);
-    --surface-solid: #1c1c24;
-    --text-primary: #f3f3f9;
-    --text-secondary: #a2a4b8;
-    --text-tertiary: #62647a;
-    --separator: rgba(120, 124, 150, 0.22);
-    --accent: #8f9bff;
-    --accent-2: #b08cff;
-    --accent-soft: rgba(143, 155, 255, 0.14);
-    --nav-material: rgba(7, 7, 12, 0.62);
-    --shadow: none;
-    --shadow-lg: 0 calc(var(--unit) * 1.6) calc(var(--unit) * 4.6) rgba(0, 0, 0, 0.6);
-    --shadow-glow: 0 calc(var(--unit) * 1.2) calc(var(--unit) * 4) rgba(143, 155, 255, 0.28);
-    --card-border: rgba(255, 255, 255, 0.07);
-  }
 }
 
 *,
@@ -95,19 +76,10 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(38vmax 38vmax at 22% 18%, rgba(77, 107, 254, 0.16), transparent 70%),
-    radial-gradient(34vmax 34vmax at 82% 62%, rgba(139, 92, 255, 0.13), transparent 70%),
-    radial-gradient(30vmax 30vmax at 55% 88%, rgba(77, 160, 255, 0.1), transparent 70%);
+    radial-gradient(38vmax 38vmax at 22% 18%, rgba(77, 107, 254, 0.22), transparent 70%),
+    radial-gradient(34vmax 34vmax at 82% 62%, rgba(139, 92, 255, 0.18), transparent 70%),
+    radial-gradient(30vmax 30vmax at 55% 88%, rgba(77, 160, 255, 0.12), transparent 70%);
   animation: drift 26s ease-in-out infinite alternate;
-}
-
-@media (prefers-color-scheme: dark) {
-  body::before {
-    background:
-      radial-gradient(38vmax 38vmax at 22% 18%, rgba(77, 107, 254, 0.22), transparent 70%),
-      radial-gradient(34vmax 34vmax at 82% 62%, rgba(139, 92, 255, 0.18), transparent 70%),
-      radial-gradient(30vmax 30vmax at 55% 88%, rgba(77, 160, 255, 0.12), transparent 70%);
-  }
 }
 
 @keyframes drift {
@@ -146,6 +118,8 @@ p {
 code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.9em;
+  /* 长标识符允许在任意字符处断行，避免把表格单元格顶出屏幕 */
+  overflow-wrap: anywhere;
   padding: calc(var(--unit) * 0.15) calc(var(--unit) * 0.55);
   border-radius: var(--radius-sm);
   background: var(--accent-soft);
@@ -186,6 +160,7 @@ code {
   display: inline-flex;
   align-items: center;
   gap: calc(var(--unit) * 0.8);
+  padding-block: calc(var(--unit) * 0.8);
   font-size: var(--text-body);
   font-weight: 650;
   color: var(--text-primary);
@@ -218,6 +193,10 @@ code {
 }
 
 .nav-links a {
+  display: inline-flex;
+  align-items: center;
+  /* 高度由字号 em 推导，随视口缩放，任何屏幕都保持可点按的尺寸 */
+  min-height: 2.6em;
   padding: calc(var(--unit) * 0.5) calc(var(--unit) * 1.1);
   border-radius: var(--pill);
   font-size: var(--text-meta);
@@ -239,6 +218,10 @@ code {
 
 .nav-action {
   margin-inline-start: auto;
+  /* 高度由字号 em 推导，随视口缩放，任何屏幕都保持可点按的尺寸 */
+  min-height: 2.6em;
+  display: inline-flex;
+  align-items: center;
   padding: calc(var(--unit) * 0.75) calc(var(--unit) * 2.2);
   border-radius: var(--pill);
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
@@ -270,18 +253,25 @@ code {
 /* 首屏 */
 .hero {
   position: relative;
-  padding-block: calc(var(--section-gap) * 0.7) var(--section-gap);
+  padding-block: calc(var(--section-gap) * 0.45) calc(var(--section-gap) * 0.45);
+}
+
+@media (min-width: 52rem) {
+  .hero {
+    padding-block: calc(var(--section-gap) * 0.7) calc(var(--section-gap) * 0.7);
+  }
 }
 
 .hero-inner {
   display: grid;
-  gap: var(--gap-lg);
+  gap: var(--gap);
   align-items: center;
 }
 
 @media (min-width: 52rem) {
   .hero-inner {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: var(--gap-lg);
   }
 }
 
@@ -361,20 +351,38 @@ code {
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap-sm);
-  margin-block-start: var(--gap-lg);
+  margin-block-start: var(--gap);
+}
+
+.cta .button {
+  flex: 1 1 9.5rem;
+  justify-content: center;
+}
+
+/* 桌面容器够宽时按钮回归内容宽度，不做平均拉伸 */
+@media (min-width: 52rem) {
+  .cta {
+    margin-block-start: var(--gap-lg);
+  }
+
+  .cta .button {
+    flex: 0 1 auto;
+  }
 }
 
 .button {
   display: inline-flex;
   align-items: center;
   gap: calc(var(--unit) * 0.9);
-  padding: calc(var(--unit) * 1.2) calc(var(--unit) * 2.8);
+  min-height: 2.9em;
+  padding: calc(var(--unit) * 1.2) calc(var(--unit) * 2.6);
   border-radius: var(--pill);
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   color: #ffffff;
   font-size: var(--text-body);
   font-weight: 650;
   text-decoration: none;
+  white-space: nowrap;
   box-shadow: var(--shadow-glow);
   transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1), opacity 0.2s ease,
     box-shadow 0.2s ease;
@@ -436,15 +444,22 @@ code {
   opacity: 0.82;
 }
 
+/* 窄屏按钮并排时空间只够主文案，次要信息由下方事实卡片承载 */
+@media (max-width: 51.999rem) {
+  .button-meta {
+    display: none;
+  }
+}
+
 .facts {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--gap-sm);
   margin: var(--gap-lg) 0 0;
 }
 
 .facts div {
-  min-width: calc(var(--unit) * 10);
+  min-width: 0;
   padding: calc(var(--unit) * 1.1) calc(var(--unit) * 1.6);
   border-radius: var(--radius-md);
   background: var(--surface);
@@ -474,10 +489,16 @@ code {
 
 /* 鲸鱼预览：悬浮漂动 + 光晕 */
 .pet {
-  margin: 0;
+  margin: calc(var(--gap) * 0.75) 0 0;
   justify-self: center;
   width: min(100%, calc(var(--unit) * 46));
   position: relative;
+}
+
+@media (min-width: 52rem) {
+  .pet {
+    margin-block-start: 0;
+  }
 }
 
 .pet::before {
@@ -508,7 +529,7 @@ code {
   max-width: 100%;
   height: auto;
   overflow: visible;
-  filter: drop-shadow(0 calc(var(--unit) * 2) calc(var(--unit) * 5) rgba(28, 28, 48, 0.2));
+  filter: drop-shadow(0 calc(var(--unit) * 2) calc(var(--unit) * 5) rgba(0, 0, 0, 0.55));
   animation: float 6s ease-in-out infinite;
 }
 
@@ -525,12 +546,6 @@ code {
   .pet-art,
   .pet::before {
     animation: none;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .pet-art {
-    filter: drop-shadow(0 calc(var(--unit) * 2) calc(var(--unit) * 5) rgba(0, 0, 0, 0.55));
   }
 }
 
@@ -613,16 +628,10 @@ code {
   position: absolute;
   inset: 0 0 auto;
   height: 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent);
   opacity: 0;
   transition: opacity 0.26s ease;
   pointer-events: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .card::before {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent);
-  }
 }
 
 .card:hover {
@@ -700,11 +709,14 @@ code {
 
 .row dt {
   font-weight: 650;
+  /* grid 子项的默认 min-width 是 auto，长标识符会把轨道顶出屏幕，必须允许收缩 */
+  min-width: 0;
 }
 
 .row dd {
   margin: 0;
   color: var(--text-secondary);
+  min-width: 0;
 }
 
 @media (min-width: 40rem) {
@@ -935,6 +947,10 @@ code {
 }
 
 .footer a {
+  display: inline-flex;
+  align-items: center;
+  /* 高度由字号 em 推导，随视口缩放，任何屏幕都保持可点按的尺寸 */
+  min-height: 2.6em;
   color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.16s ease;
@@ -944,21 +960,18 @@ code {
   color: var(--accent);
 }
 
-/* 滚动揭示：元素从下方淡入升起，尊重 reduced-motion */
-[data-reveal] {
-  opacity: 0;
+/* 滚动揭示：只做位移不隐藏内容，脚本不可用或观察器未触发时页面始终完整可见 */
+html.js [data-reveal] {
   transform: translateY(calc(var(--unit) * 3.4));
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-[data-reveal].is-visible {
-  opacity: 1;
+html.js [data-reveal].is-visible {
   transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal] {
-    opacity: 1;
+  html.js [data-reveal] {
     transform: none;
     transition: none;
   }

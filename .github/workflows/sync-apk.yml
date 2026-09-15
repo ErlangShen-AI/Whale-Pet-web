@@ -2,11 +2,12 @@ name: 同步安装包与发布日志
 
 on:
   schedule:
-    - cron: '30 16 * * *'
+    - cron: '0 16 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   sync:
@@ -57,3 +58,16 @@ jobs:
           fi
           git commit -m "同步安装包与发布日志"
           git push
+
+      - name: 清理历史运行
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          for workflow in $(gh api "repos/$GITHUB_REPOSITORY/actions/workflows" --jq '.workflows[].id'); do
+            gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=100" \
+              --jq '.workflow_runs[].id' | tail -n +6 | while read -r run; do
+                gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$run" > /dev/null || true
+              done
+          done
+          printf '每个工作流保留最近 5 次运行\n'
