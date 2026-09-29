@@ -11,6 +11,9 @@
 ├── app.js                     页面填充与安装包信息
 ├── assets/                    鲸鱼贴图与动图
 ├── downloads/                 同步到这里的安装包与信息文件
+├── README.md                  仓库说明
+├── LICENSE                    许可
+├── .nojekyll                  静态站点标记
 └── .github/workflows/
     ├── sync-apk.yml           每天取回安装包并提交
     └── pages.yml              构建并部署页面
@@ -26,6 +29,7 @@
 ## 页面部署
 
 `pages.yml` 在 `main` 收到推送时构建并部署到 GitHub Pages；安装包同步产生新提交后也会触发一次部署。
+也可以在 Actions 页面手动触发。
 
 ## 本地预览
 
