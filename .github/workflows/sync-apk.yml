@@ -5,6 +5,10 @@ on:
     - cron: '0 16 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: sync-apk
+  cancel-in-progress: false
+
 permissions:
   contents: write
   actions: write
@@ -13,42 +17,63 @@ jobs:
   sync:
     name: 同步安装包与发布日志
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       SOURCE_REPO: ErlangShen-AI/DeepSeek-Whale-Pet-Android
       SOURCE_BRANCH: main
+      APK: downloads/DeepSeek-Whale-Pet.apk
+      INFO: downloads/latest.json
     steps:
       - name: 检出源码
         uses: actions/checkout@v7
 
-      - name: 取回安装包与发布页正文
+      - name: 取回发布页正文
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           mkdir -p downloads
+          gh api "repos/$SOURCE_REPO/releases/tags/latest" --jq '.body // ""' > downloads/release-notes.md
+
+      - name: 按发布资产时间取回安装包
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REMOTE=$(gh api "repos/$SOURCE_REPO/releases/tags/latest" --jq '.assets[0].updated_at')
+          LOCAL=$(jq -r '.updatedAt // ""' "$INFO" 2>/dev/null || printf '')
+          if [ -f "$APK" ] && [ "$REMOTE" = "$LOCAL" ]; then
+            printf '安装包未更新，跳过下载\n'
+            exit 0
+          fi
           gh release download latest --repo "$SOURCE_REPO" --pattern '*.apk' --clobber --dir downloads
-          gh api "repos/$SOURCE_REPO/releases/tags/latest" --jq '.body' > downloads/release-notes.md
+          printf '已取回安装包\n'
 
       - name: 同步源仓库说明文件
         run: |
-          curl -fsSL "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/README.md" -o downloads/upstream-readme.md
-          curl -fsSL "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/LICENSE" -o downloads/upstream-license.txt
+          set -euo pipefail
+          curl -fsSL --retry 3 "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/README.md" -o downloads/upstream-readme.md
+          curl -fsSL --retry 3 "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/LICENSE" -o downloads/upstream-license.txt
 
       - name: 写入安装包信息
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          APK=downloads/DeepSeek-Whale-Pet.apk
+          set -euo pipefail
+          PREVIOUS=$(jq -r '.version // ""' "$INFO" 2>/dev/null || printf '')
+          VERSION=$(curl -fsSL --retry 3 "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/app/build.gradle.kts" |
+            sed -n 's/.*versionName = "\(.*\)"/\1/p' | head -n 1)
+          [ -n "$VERSION" ] || VERSION="$PREVIOUS"
           SIZE=$(stat -c%s "$APK")
           SHA=$(sha256sum "$APK" | cut -d ' ' -f 1)
           UPDATED=$(gh api "repos/$SOURCE_REPO/releases/tags/latest" --jq '.assets[0].updated_at')
-          VERSION=$(curl -fsSL "https://raw.githubusercontent.com/$SOURCE_REPO/$SOURCE_BRANCH/app/build.gradle.kts" |
-            sed -n 's/.*versionName = "\(.*\)"/\1/p')
-          printf '{\n  "version": "%s", "size": %s, "sha256": "%s", "updatedAt": "%s"\n}\n' \
-            "$VERSION" "$SIZE" "$SHA" "$UPDATED" > downloads/latest.json
-          cat downloads/latest.json
+          jq -n --arg version "$VERSION" --argjson size "$SIZE" --arg sha256 "$SHA" --arg updatedAt "$UPDATED" \
+            '{version: $version, size: $size, sha256: $sha256, updatedAt: $updatedAt}' > "$INFO"
+          cat "$INFO"
 
       - name: 提交更新
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add downloads
@@ -60,10 +85,11 @@ jobs:
           git push
 
       - name: 清理历史运行
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
+          set -euo pipefail
           for workflow in $(gh api "repos/$GITHUB_REPOSITORY/actions/workflows" --jq '.workflows[].id'); do
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=100" \
               --jq '.workflow_runs[].id' | tail -n +6 | while read -r run; do

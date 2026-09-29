@@ -12,18 +12,13 @@ const ICONS = {
   wallet:
     '<path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/><path d="M4 10h16"/><circle cx="16" cy="14" r="1.2"/>',
   cost: '<path d="M12 4v10"/><path d="M8 10l4 4 4-4"/><path d="M5 19h14"/>',
-  chart:
-    '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
-  edit:
-    '<path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="M13.5 6.5l4 4"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  edit: '<path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="M13.5 6.5l4 4"/>',
   quote:
     '<path d="M7 7h4v6H7a3 3 0 0 1-3-3V8a1 1 0 0 1 1-1Z"/><path d="M15 7h4v6h-4a3 3 0 0 1-3-3V8a1 1 0 0 1 1-1Z"/><path d="M9 13v5a3 3 0 0 0 3 3"/>',
-  sound:
-    '<path d="M4 10v4h3l4 4V6L7 10H4Z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/>',
-  theme:
-    '<path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/><circle cx="12" cy="12" r="9" opacity=".25"/>',
-  shield:
-    '<path d="M12 3l7 3v6c0 4.4-3 8.2-7 9-4-.8-7-4.6-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/>',
+  sound: '<path d="M4 10v4h3l4 4V6L7 10H4Z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/>',
+  theme: '<path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/><circle cx="12" cy="12" r="9" opacity=".25"/>',
+  shield: '<path d="M12 3l7 3v6c0 4.4-3 8.2-7 9-4-.8-7-4.6-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/>',
   sparkle:
     '<path d="M12 3l1.9 5.3L19 10.2l-5.1 1.9L12 17.4l-1.9-5.3L5 10.2l5.1-1.9L12 3Z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z"/>'
 }
@@ -52,23 +47,30 @@ const esc = (value) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
 
-/** 从上游 README 切出某个二级标题到下一个同级标题之间的正文。 */
-const sliceSection = (markdown, title) => {
-  const pattern = new RegExp(`^##\\s+${title}\\s*$`, 'm')
-  const start = markdown.search(pattern)
+/** 从上游 README 切出某个标题到下一个同级或更高级标题之间的正文，层级默认二级。 */
+const sliceSection = (markdown, title, level = 2) => {
+  const prefix = '#'.repeat(level)
+  const start = markdown.search(new RegExp(`^${prefix}\\s+${title}\\s*$`, 'm'))
   if (start < 0) return ''
-  const body = markdown.slice(start).replace(/^##\s+.*$/m, '')
-  const next = body.search(/^##\s+/m)
+  const body = markdown.slice(start).replace(new RegExp(`^${prefix}\\s+.*$`, 'm'), '')
+  const next = body.search(new RegExp(`^#{1,${level}}\\s+`, 'm'))
   return (next < 0 ? body : body.slice(0, next)).trim()
 }
 
-/** 把「标题：正文」或「标题」两种 bullet 拆成两段。 */
-const splitBullet = (line) => {
-  const text = line.replace(/^[-*]\s+/, '').trim()
-  const colon = text.search(/[：:]/)
-  if (colon < 1) return { title: text, body: '' }
-  return { title: text.slice(0, colon).trim(), body: text.slice(colon + 1).trim() }
+/** 按首个冒号拆「标题：正文」，链接协议里的冒号不参与拆分。 */
+const splitLabel = (text) => {
+  let cut = text.search(/[：:]/)
+  while (cut > 0 && /https?$/.test(text.slice(0, cut))) {
+    const rest = text.slice(cut + 1)
+    const next = rest.search(/[：:]/)
+    cut = next < 0 ? -1 : cut + 1 + next
+  }
+  if (cut < 1) return { title: text, body: '' }
+  return { title: text.slice(0, cut).trim(), body: text.slice(cut + 1).trim() }
 }
+
+/** 去掉列表前缀后按 splitLabel 拆分。 */
+const splitBullet = (line) => splitLabel(line.replace(/^[-*]\s+/, '').trim())
 
 /** markdown 表格转行，第一行当表头。 */
 const parseTable = (section) => {
@@ -83,9 +85,11 @@ const parseTable = (section) => {
   })
 }
 
-/** 行内代码与链接转 HTML，其他字符转义，避免引入完整 markdown 依赖。 */
+/** 行内加粗、斜体、代码与链接转 HTML，其他字符转义，避免引入完整 markdown 依赖。 */
 const rich = (text) => {
   let out = esc(text)
+  out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>')
   out = out.replace(/`([^`]+)`/g, '<code>$1</code>')
   out = out.replace(
     /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
@@ -156,7 +160,7 @@ const fillFeatures = (readme) => {
         <span class="card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24">${pickIcon(item.title)}</svg>
         </span>
-        <h3>${esc(item.title)}</h3>
+        <h3>${rich(item.title)}</h3>
         ${item.body ? `<p>${rich(item.body)}</p>` : ''}
       </li>`
     )
@@ -186,27 +190,27 @@ const fillSteps = (readme) => {
   if (!section) return
   const table = parseTable(section)
   const items = table.length
-    ? table
+    ? table.map((row) => ({ title: row.key, body: row.value }))
     : section
         .split('\n')
         .filter((line) => /^\d+\./.test(line.trim()))
-        .map((line) => {
-          const text = line.replace(/^\d+\.\s*/, '').trim()
-          const colon = text.search(/[：:]/)
-          return colon < 1
-            ? { title: text, body: '' }
-            : { title: text.slice(0, colon).trim(), body: text.slice(colon + 1).trim() }
-        })
+        .map((line) => splitLabel(line.replace(/^\d+\.\s*/, '').trim()))
   if (!items.length) return
   host.innerHTML = items
     .map((item) => {
       // 上游 README 的安装步骤把本站写成「官网」，本页就是官网，改成指向自身
-      const title = (item.key || item.title).replace(/官网/g, '本页')
-      const body = rich((item.value || item.body).replace(/官网/g, '本页'))
-      return `
+      const title = (item.title || '').replace(/官网/g, '本页')
+      const body = (item.body || '').replace(/官网/g, '本页')
+      // 只有一句说明的步骤按正文排，分标题与正文的步骤排成两段
+      return body
+        ? `
       <li>
-        <h3>${esc(title)}</h3>
-        <p>${body}</p>
+        <h3>${rich(title)}</h3>
+        <p>${rich(body)}</p>
+      </li>`
+        : `
+      <li>
+        <p class="step-line">${rich(title)}</p>
       </li>`
     })
     .join('')
@@ -241,24 +245,29 @@ const fillPoints = (readme, key, sectionTitle) => {
   host.innerHTML = lines.map((line) => `<li>${rich(line.replace(/^[-*]\s+/, ''))}</li>`).join('')
 }
 
-/** 段落性质的补充说明，按小节取 README 里表格之后的那段文字。 */
+/** 段落性质的补充说明，按小节取表格与列表之后的那段文字。 */
 const fillNotes = (readme) => {
   const targets = {
-    interactions: '交互',
-    install: '安装',
-    permissions: '权限说明',
-    design: '尺寸只有三个来源',
-    credits: '许可'
+    interactions: ['交互', 2],
+    install: ['安装', 2],
+    permissions: ['权限说明', 2],
+    design: ['设计说明', 2],
+    credits: ['许可', 3]
   }
   for (const key of Object.keys(targets)) {
     const node = document.querySelector(`[data-note="${key}"]`)
     if (!node) continue
-    const section = sliceSection(readme, targets[key])
+    const [title, level] = targets[key]
+    const section = sliceSection(readme, title, level)
     if (!section) continue
     const paragraph = section
       .split('\n\n')
       .map((block) => block.trim())
-      .filter((block) => block && !block.startsWith('|') && !/^[-*]\s+/.test(block))
+      // 只取真正的段落，列表、表格、代码块都排除，避免与步骤卡片重复
+      .filter(
+        (block) =>
+          block && !block.startsWith('|') && !/^[-*]\s+/.test(block) && !/^\d+\.\s+/.test(block)
+      )
       .filter((block) => !/^```/.test(block))
     const text = paragraph[paragraph.length - 1]
     if (text) node.innerHTML = rich(text)
@@ -270,7 +279,14 @@ const fillCredits = (readme) => {
   if (lead) {
     const section = sliceSection(readme, '致谢与许可')
     if (section) {
-      const block = section.split('\n\n')[0]
+      // 取第一段真正的正文，跳过子标题与列表
+      const block = section
+        .split('\n\n')
+        .map((part) => part.trim())
+        .find(
+          (part) =>
+            part && !/^#{1,6}\s/.test(part) && !/^[-*]\s+/.test(part) && !part.startsWith('|')
+        )
       if (block) lead.innerHTML = rich(block)
     }
   }
@@ -279,7 +295,9 @@ const fillCredits = (readme) => {
   if (origin) {
     const section = sliceSection(readme, '致谢与许可')
     if (section) {
-      const match = section.match(/\[([^\]]+)\]\(https:\/\/github\.com\/MeteorNOX\/DeepSeek-Balance-Whale-Widget\)/)
+      const match = section.match(
+        /\[([^\]]+)\]\(https:\/\/github\.com\/MeteorNOX\/DeepSeek-Balance-Whale-Widget\)/
+      )
       if (match) origin.textContent = match[1]
     }
   }
@@ -292,8 +310,9 @@ const fillCredits = (readme) => {
   }
 }
 
-/** 发布页正文只有标题、列表与分隔线，这里做对应的子集渲染。 */
-const renderReleaseNotes = (notes) => {
+/** 发布页正文只有标题、列表与分隔线，这里做对应的子集渲染。
+    与小节标题重复的二级标题不再渲染一遍。 */
+const renderReleaseNotes = (notes, skipTitles = []) => {
   const lines = notes.replace(/\r/g, '').split('\n')
   let html = ''
   let inList = false
@@ -317,8 +336,10 @@ const renderReleaseNotes = (notes) => {
     const heading = line.match(/^#{2,3}\s+(.*)$/)
     if (heading) {
       closeList()
+      const title = heading[1].trim()
+      if (skipTitles.includes(title)) continue
       const level = line.startsWith('### ') ? 3 : 2
-      html += `<h${level} class="changelog-title">${esc(heading[1])}</h${level === 2 ? 2 : 3}>`
+      html += `<h${level} class="changelog-title">${esc(title)}</h${level === 2 ? 2 : 3}>`
       continue
     }
     if (/^[-*]\s+/.test(line)) {
@@ -341,7 +362,9 @@ const fillChangelog = async () => {
   if (!host) return
   const notes = await readText('downloads/release-notes.md')
   if (!notes) return
-  const html = renderReleaseNotes(notes)
+  const section = host.closest('.section')
+  const pageTitle = section?.querySelector('h2')?.textContent.trim()
+  const html = renderReleaseNotes(notes, pageTitle ? [pageTitle] : [])
   if (html.trim()) host.innerHTML = html
 }
 
@@ -369,24 +392,34 @@ const buildNav = () => {
     .join('')
 }
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)')
+
 const syncNav = () => {
   const nav = document.querySelector('[data-nav]')
   if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 0)
 }
 
-/** 导航高亮：滚动到哪一小节，对应链接亮起。 */
+/** 导航高亮：滚动到哪一小节，对应链接亮起 */
 const observeSections = () => {
-  const links = document.querySelectorAll('[data-nav-item]')
   const sections = [...document.querySelectorAll('[data-section-title]')]
   if (!('IntersectionObserver' in window) || !sections.length) return
   const navLinks = [...document.querySelectorAll('.nav-links a')]
+  const scroller = document.querySelector('.nav-links')
+  const mark = (id) => {
+    for (const link of navLinks) {
+      const active = link.getAttribute('href') === `#${id}`
+      link.classList.toggle('is-active', active)
+      // 窄屏导航横向滚动，亮起的一项始终滚回视野中心
+      if (active && scroller && scroller.scrollWidth > scroller.clientWidth) {
+        link.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
+      }
+    }
+  }
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (!entry.isIntersecting) continue
-        navLinks.forEach((link) => {
-          link.classList.toggle('is-active', link.getAttribute('href') === `#${entry.target.id}`)
-        })
+        if (entry.isIntersecting) mark(entry.target.id)
       }
     },
     { rootMargin: '-30% 0px -60% 0px' }
@@ -394,27 +427,88 @@ const observeSections = () => {
   sections.forEach((section) => observer.observe(section))
 }
 
-/** 元素滚进视口时淡入升起，逐个错开。 */
+/** 元素滚进视口时淡入升起，同屏出现的一组按文档顺序错开 */
 const observeReveals = () => {
-  const targets = document.querySelectorAll('[data-reveal]')
+  const targets = [...document.querySelectorAll('[data-reveal]')]
   if (!targets.length) return
   if (!('IntersectionObserver' in window)) {
     targets.forEach((node) => node.classList.add('is-visible'))
     return
   }
+  let callbacks = 0
   const observer = new IntersectionObserver(
     (entries) => {
+      callbacks += 1
+      const arrived = []
       for (const entry of entries) {
+        // 只处理进入视口的元素，其余留待后续回调
         if (!entry.isIntersecting) continue
-        const index = [...targets].indexOf(entry.target)
-        entry.target.style.transitionDelay = `${Math.min(index, 4) * 60}ms`
-        entry.target.classList.add('is-visible')
+        arrived.push(entry.target)
         observer.unobserve(entry.target)
       }
+      arrived.sort((a, b) => targets.indexOf(a) - targets.indexOf(b))
+      arrived.forEach((node, index) => {
+        node.style.transitionDelay = `${Math.min(index, 3) * 70}ms`
+        node.classList.add('is-visible')
+        node.addEventListener(
+          'transitionend',
+          () => {
+            node.style.transitionDelay = ''
+          },
+          { once: true }
+        )
+      })
     },
-    { threshold: 0.08, rootMargin: '0px 0px -8% 0px' }
+    { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
   )
   targets.forEach((node) => observer.observe(node))
+  // 环境不派发观察器回调时，直接让所有小节落位，内容始终完整可见
+  window.setTimeout(() => {
+    if (callbacks === 0) targets.forEach((node) => node.classList.add('is-visible'))
+  }, 3000)
+}
+
+/** 指针悬停时鲸鱼轻微跟随，位移按指数逼近收敛，离开视口或减弱动效时不运行 */
+const attachPetParallax = () => {
+  const hero = document.querySelector('.hero-inner')
+  const pet = document.querySelector('.pet')
+  if (!hero || !pet || !finePointer.matches || reducedMotion.matches) return
+  const target = { x: 0, y: 0 }
+  const current = { x: 0, y: 0 }
+  const reach = 14
+  let raf = 0
+  const tick = () => {
+    current.x += (target.x - current.x) * 0.12
+    current.y += (target.y - current.y) * 0.12
+    const settled = Math.abs(target.x - current.x) < 0.05 && Math.abs(target.y - current.y) < 0.05
+    pet.style.transform = settled
+      ? ''
+      : `translate3d(${current.x.toFixed(2)}px, ${current.y.toFixed(2)}px, 0)`
+    raf = settled ? 0 : requestAnimationFrame(tick)
+  }
+  const schedule = () => {
+    if (!raf) raf = requestAnimationFrame(tick)
+  }
+  hero.addEventListener('pointermove', (event) => {
+    const box = hero.getBoundingClientRect()
+    const dx = (event.clientX - box.left) / box.width - 0.5
+    const dy = (event.clientY - box.top) / box.height - 0.5
+    target.x = -dx * reach
+    target.y = -dy * reach
+    schedule()
+  })
+  hero.addEventListener('pointerleave', () => {
+    target.x = 0
+    target.y = 0
+    schedule()
+  })
+  reducedMotion.addEventListener('change', () => {
+    if (reducedMotion.matches) {
+      target.x = 0
+      target.y = 0
+      pet.style.transform = ''
+    }
+  })
 }
 
 const main = async () => {
@@ -423,6 +517,7 @@ const main = async () => {
   buildNav()
   observeSections()
   observeReveals()
+  attachPetParallax()
   syncNav()
   window.addEventListener('scroll', syncNav, { passive: true })
 
