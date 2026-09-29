@@ -26,6 +26,11 @@ jobs:
     steps:
       - name: 检出源码
         uses: actions/checkout@v7
+        env:
+          # 让 git init 的初始分支名为 main，抑制初始化仓库时的提示文本
+          GIT_CONFIG_COUNT: 1
+          GIT_CONFIG_KEY_0: init.defaultBranch
+          GIT_CONFIG_VALUE_0: main
 
       - name: 取回发布页正文
         env:
