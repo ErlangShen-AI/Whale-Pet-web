@@ -16,7 +16,7 @@ permissions:
 jobs:
   sync:
     name: 同步安装包与发布日志
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       SOURCE_REPO: ErlangShen-AI/DeepSeek-Whale-Pet-Android
@@ -72,6 +72,7 @@ jobs:
           cat "$INFO"
 
       - name: 提交更新
+        id: commit
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -79,10 +80,18 @@ jobs:
           git add downloads
           if git diff --cached --quiet; then
             printf '安装包没有变化\n'
+            printf 'changed=false\n' >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git commit -m "同步安装包与发布日志"
           git push
+          printf 'changed=true\n' >> "$GITHUB_OUTPUT"
+
+      - name: 触发页面部署
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY"
 
       - name: 清理历史运行
         if: always()
@@ -93,7 +102,7 @@ jobs:
           for workflow in $(gh api "repos/$GITHUB_REPOSITORY/actions/workflows" --jq '.workflows[].id' 2>/dev/null || true); do
             gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=100" \
               --jq '.workflow_runs[].id' 2>/dev/null | tail -n +6 | while read -r run; do
-                gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$run" > /dev/null || true
+                gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$run" > /dev/null 2>&1 || true
               done
           done
           printf '每个工作流保留最近 5 次运行\n'
