@@ -43,5 +43,5 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
         env:
-          # deploy-pages 依赖的代码引入了内置 punycode 模块，屏蔽该模块的弃用警告
-          NODE_OPTIONS: "--disable-warning=DEP0040"
+          # deploy-pages 依赖的代码引入了内置 punycode 模块，屏蔽该模块的弃用提示
+          NODE_OPTIONS: "--no-deprecation"
